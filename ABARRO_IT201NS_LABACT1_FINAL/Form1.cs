@@ -103,6 +103,11 @@ namespace ABARRO_IT201NS_LABACT1_FINAL
             }
         }
 
+        private double GetFinalTotal()
+        {
+            return ApplyDiscount(currentParking.ComputeFee());
+        }
+
         private void DisplayTransaction()
         {
             lblPlate.Text = currentParking.PlateNumber;
@@ -115,7 +120,7 @@ namespace ABARRO_IT201NS_LABACT1_FINAL
 
             lblStandardFee.Text = "₱" + baseFee;
             lblServiceCharge.Text = "₱20";
-            lblTotal.Text = "₱" + currentParking.ComputeFee();
+            lblTotal.Text = "₱" + GetFinalTotal();
         }
 
         private double GetRate(string type)
@@ -175,6 +180,10 @@ namespace ABARRO_IT201NS_LABACT1_FINAL
                 return;
             }
 
+            double total = GetFinalTotal();
+            double payment = double.Parse(txtPayAmount.Text);
+            double change = payment - total;
+
             rtbReceipt.Text =
                 "SMART PARKING RECEIPT\n" +
                 "------------------------\n" +
@@ -182,7 +191,10 @@ namespace ABARRO_IT201NS_LABACT1_FINAL
                 "\nType: " + currentParking.VehicleType +
                 "\nSlot: " + currentParking.SlotNumber +
                 "\nHours: " + currentParking.HoursParked +
-                "\nTotal: ₱" + currentParking.ComputeFee() +
+                "\n------------------------" +
+                "\nTOTAL: ₱" + total +
+                "\nPAID: ₱" + payment +
+                "\nCHANGE: ₱" + change +
                 "\n------------------------";
         }
 
@@ -236,7 +248,7 @@ namespace ABARRO_IT201NS_LABACT1_FINAL
                     return;
                 }
 
-                double total = ApplyDiscount(currentParking.ComputeFee());
+                double total = GetFinalTotal();
                 double payment = double.Parse(txtPayAmount.Text);
 
                 if (payment < total)
@@ -253,6 +265,28 @@ namespace ABARRO_IT201NS_LABACT1_FINAL
             catch
             {
                 MessageBox.Show("Invalid payment.");
+            }
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            if (currentParking == null)
+            {
+                MessageBox.Show("No active transaction to update.");
+                return;
+            }
+
+            try
+            {
+                currentParking.HoursParked = int.Parse(txtHours.Text);
+
+                DisplayTransaction();
+
+                MessageBox.Show("Transaction updated successfully!");
+            }
+            catch
+            {
+                MessageBox.Show("Invalid hours input.");
             }
         }
     }
